@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --font: "Mitr", sans-serif;
+  --color-background: #5a4b50;
+  --color-background-success: #3a86ff;
+  --color-background-failed: #ff4d6d;
+  --color-tiles-background: #3f383b;
+  --color-tiles-background-hover: #5a4f53;
+  --color-tiles-correct: #00c896;
+  --color-tiles-displaced: #ffb703;
+  --color-tiles-wrong: #2a2426;
+  --color-tiles-disabled: #7a6b70;
+}
+
+body {
+  font-family: var(--font);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.519);
+  background-color: var(--color-background);
+}
