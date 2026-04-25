@@ -19,6 +19,7 @@ src/
 │   └── use-game.js         # Hook com toda a lógica do jogo
 ├── lib/
 │   └── words.js            # Lista de palavras
+│   └── sound.js            # Funções que tocam sons para ações do jogo
 └── styles/
     └── global.css          # Definições globais de estilização
 ```
