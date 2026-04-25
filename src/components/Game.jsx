@@ -26,7 +26,6 @@ export default function Game() {
     handleTileClick,
   } = useGame();
 
-  console.log("🚀 ~ Game ~ chosen:", chosen);
   return (
     <div className="flex flex-col items-center gap-3 pt-4">
       <h1 className="text-white text-4xl text-center tracking-widest">

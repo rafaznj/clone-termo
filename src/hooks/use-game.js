@@ -2,6 +2,8 @@ import { useEffect, useCallback } from "react";
 import { words } from "../lib/words";
 import { COLUMNS, ROWS } from "../constants/game-constants";
 import { useReducer } from "react";
+import { lose, win, skip, enter, wrong } from "../lib/sound";
+import { useRef } from "react";
 
 const getRandomWord = () =>
   words[Math.floor(Math.random() * words.length)].toUpperCase();
@@ -38,7 +40,6 @@ function gameReducer(state, action) {
       return {
         ...state,
         guesses: next,
-        filledCount: state.filledCount + 1,
         selectedColumn: Math.min(state.selectedColumn + 1, COLUMNS - 1),
       };
     }
@@ -155,27 +156,45 @@ export function useGame() {
 
   const handleKey = useCallback((key) => {
     if (!/^[A-Za-zÀ-ú]$/.test(key)) return;
-    dispatch({ type: "KEY", letter: key.toUpperCase() });
+    (enter(), dispatch({ type: "KEY", letter: key.toUpperCase() }));
   }, []);
 
-  const handleBackSpace = useCallback(
-    () => dispatch({ type: "BACKSPACE" }),
-    [],
-  );
+  const handleBackSpace = useCallback(() => {
+    enter();
+    dispatch({ type: "BACKSPACE" });
+  }, []);
   const handleEnter = useCallback(() => dispatch({ type: "ENTER" }), []);
   const handleReset = useCallback(() => dispatch({ type: "RESET" }), []);
-  const handleTileClick = useCallback(
-    (colIndex) => dispatch({ type: "SELECT_COLUMN", colIndex }),
-    [],
-  );
+  const handleTileClick = useCallback((colIndex) => {
+    skip();
+    dispatch({ type: "SELECT_COLUMN", colIndex });
+  }, []);
+
+  const prevRowRef = useRef(0);
+
+  useEffect(() => {
+    if (state.status === "won") {
+      win();
+    } else if (state.status === "lost") {
+      lose();
+    } else if (state.currentRow !== prevRowRef.current) {
+      wrong();
+    }
+    prevRowRef.current = state.currentRow;
+  }, [state.status, state.currentRow]);
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.key === "Enter") handleEnter();
-      else if (e.key === "Backspace") handleBackSpace();
-      else if (e.key === "ArrowLeft") dispatch({ type: "ARROW_LEFT" });
-      else if (e.key === "ArrowRight") dispatch({ type: "ARROW_RIGHT" });
-      else if (/^[a-zA-ZÀ-ú]$/.test(e.key)) handleKey(e.key);
+      if (e.key === "Enter") {
+        handleEnter();
+      } else if (e.key === "Backspace") handleBackSpace();
+      else if (e.key === "ArrowLeft") {
+        skip();
+        dispatch({ type: "ARROW_LEFT" });
+      } else if (e.key === "ArrowRight") {
+        skip();
+        dispatch({ type: "ARROW_RIGHT" });
+      } else if (/^[a-zA-ZÀ-ú]$/.test(e.key)) handleKey(e.key);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
